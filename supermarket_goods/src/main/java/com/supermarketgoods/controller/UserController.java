@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 @Controller
@@ -85,7 +86,7 @@ public class UserController {
     @RequestMapping(value = "/save")
     @ResponseBody
     @RequiresPermissions(value = "用户管理")
-    public ServiceVO save(User user) {
+    public ServiceVO save(User user) throws NoSuchAlgorithmException {
         return userService.save(user);
     }
 
