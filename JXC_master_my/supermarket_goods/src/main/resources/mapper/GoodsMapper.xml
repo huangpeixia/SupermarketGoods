@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.supermarketgoods.dao.GoodsDao">
+
+    <resultMap id="BaseResultMap" type="com.supermarketgoods.entity.Goods">
+        <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+        <result column="goods_code" property="goodsCode" jdbcType="VARCHAR" />
+        <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+        <result column="inventory_quantity" property="inventoryQuantity" jdbcType="INTEGER" />
+        <result column="last_purchasing_price" property="lastPurchasingPrice" jdbcType="DECIMAL" />
+        <result column="min_num" property="minNum" jdbcType="INTEGER" />
+        <result column="goods_model" property="goodsModel" jdbcType="VARCHAR" />
+        <result column="goods_producer" property="goodsProducer" jdbcType="VARCHAR" />
+        <result column="purchasing_price" property="purchasingPrice" jdbcType="DECIMAL" />
+        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+        <result column="selling_price" property="sellingPrice" jdbcType="DECIMAL" />
+        <result column="state" property="state" jdbcType="INTEGER" />
+        <result column="goods_unit" property="goodsUnit" jdbcType="VARCHAR" />
+        <result column="goods_type_id" property="goodsTypeId" jdbcType="INTEGER" />
+        <result column="goods_type_name" property="goodsTypeName" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="getGoodsList" resultMap="BaseResultMap">
+        SELECT
+            goods.goods_id,
+            goods.goods_name,
+            goods.goods_code,
+            goods.goods_type_id,
+            goods_type.p_id,
+            goods.inventory_quantity,
+            goods.last_purchasing_price,
+            goods.min_num,
+            goods.goods_model,
+            goods.goods_producer,
+            goods.purchasing_price,
+            goods.remarks,
+            goods.selling_price,
+            goods.state,
+            goods.goods_unit,
+            goods_type.goods_type_name
+        FROM
+            goods
+        LEFT JOIN goods_type ON goods.goods_type_id = goods_type.goods_type_id
+        <where>
+            <if test="goodsName != null and goodsName != ''">
+                AND goods.goods_name LIKE CONCAT('%', #{goodsName} ,'%')
+            </if>
+            <if test="goodsTypeId != null and goodsTypeId != 1">
+                AND
+                (
+                    goods.goods_type_id = #{goodsTypeId} OR
+                    goods_type.p_id = #{goodsTypeId}
+                )
+            </if>
+        </where>
+        LIMIT #{offSet}, #{pageRow}
+    </select>
+
+    <select id="getGoodsCount" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            goods
+        LEFT JOIN goods_type ON goods.goods_type_id = goods_type.goods_type_id
+        <where>
+            <if test="goodsName != null and goodsName != ''">
+                AND goods.goods_name LIKE CONCAT('%', #{goodsName} ,'%')
+            </if>
+            <if test="goodsTypeId != null and goodsTypeId != 1">
+                AND
+                (
+                    goods.goods_type_id = #{goodsTypeId} OR
+                    goods_type.p_id = #{goodsTypeId}
+                )
+            </if>
+        </where>
+    </select>
+
+    <select id="getMaxCode" resultType="java.lang.String">
+        SELECT
+            MAX( goods_code )
+        FROM
+            goods
+    </select>
+
+    <insert id="saveGoods" useGeneratedKeys="true" keyProperty="goodsId" parameterType="com.supermarketgoods.entity.Goods">
+        INSERT INTO goods
+        (
+        goods_code, goods_name, inventory_quantity, min_num, goods_model,
+        goods_producer, purchasing_price,last_purchasing_price,remarks,selling_price,
+        state,goods_unit,goods_type_id
+        )
+        VALUES
+        (
+        #{goodsCode}, #{goodsName}, #{inventoryQuantity}, #{minNum}, #{goodsModel},
+        #{goodsProducer}, #{purchasingPrice}, #{lastPurchasingPrice}, #{remarks}, #{sellingPrice},
+        #{state}, #{goodsUnit}, #{goodsTypeId}
+        )
+    </insert>
+
+    <update id="updateGoods" parameterType="com.supermarketgoods.entity.Goods">
+        UPDATE goods
+        <set>
+            <if test="goodsCode != '' and goodsCode != null">
+                goods_code = #{goodsCode},
+            </if>
+            <if test="goodsName != '' and goodsName != null">
+                goods_name = #{goodsName},
+            </if>
+            <if test="inventoryQuantity != null">
+                inventory_quantity = #{inventoryQuantity},
+            </if>
+            <if test="minNum != '' and minNum != null">
+                min_num = #{minNum},
+            </if>
+            <if test="goodsModel != '' and goodsModel != null">
+                goods_model = #{goodsModel},
+            </if>
+            <if test="goodsProducer != '' and goodsProducer != null">
+                goods_producer = #{goodsProducer},
+            </if>
+            <if test="purchasingPrice != '' and purchasingPrice != null">
+                purchasing_price = #{purchasingPrice},
+            </if>
+            <if test="lastPurchasingPrice != '' and lastPurchasingPrice != null">
+                last_purchasing_price = #{lastPurchasingPrice},
+            </if>
+            <if test="remarks != '' and remarks != null">
+                remarks = #{remarks},
+            </if>
+            <if test="sellingPrice != '' and sellingPrice != null">
+                selling_price = #{sellingPrice},
+            </if>
+            <if test="state != '' and state != null">
+                state = #{state},
+            </if>
+            <if test="goodsUnit != '' and goodsUnit != null">
+                goods_unit = #{goodsUnit},
+            </if>
+            <if test="goodsTypeId != '' and goodsTypeId != null">
+                goods_type_id = #{goodsTypeId},
+            </if>
+        </set>
+        WHERE goods.goods_id = #{goodsId}
+    </update>
+
+    <delete id="deleteGoods" parameterType="java.lang.Integer">
+        DELETE FROM
+        goods
+        WHERE goods.goods_id = #{goodsId}
+    </delete>
+
+    <select id="findByGoodsId" resultMap="BaseResultMap">
+        SELECT
+            goods.goods_id,
+            goods.goods_code,
+            goods.goods_name,
+            goods.inventory_quantity,
+            goods.last_purchasing_price,
+            goods.min_num,
+            goods.goods_model,
+            goods.goods_producer,
+            goods.purchasing_price,
+            goods.remarks,
+            goods.selling_price,
+            goods.state,
+            goods.goods_unit,
+            goods.goods_type_id
+        FROM
+            goods
+        WHERE
+            goods.goods_id = #{goodsId}
+    </select>
+
+    <select id="getNoInventoryQuantity" resultMap="BaseResultMap">
+        SELECT
+            goods.goods_id,
+            goods.goods_name,
+            goods.goods_code,
+            goods.goods_type_id,
+            goods_type.p_id,
+            goods.inventory_quantity,
+            goods.last_purchasing_price,
+            goods.min_num,
+            goods.goods_model,
+            goods.goods_producer,
+            goods.purchasing_price,
+            goods.remarks,
+            goods.selling_price,
+            goods.state,
+            goods.goods_unit,
+            goods_type.goods_type_name
+        FROM
+            goods
+        LEFT JOIN goods_type ON goods.goods_type_id = goods_type.goods_type_id
+        <where>
+            <if test="nameOrCode != null and nameOrCode != ''">
+                AND
+                (
+                goods.goods_name LIKE CONCAT('%', #{nameOrCode} ,'%') OR
+                goods.goods_code LIKE CONCAT('%', #{nameOrCode} ,'%')
+                )
+            </if>
+            AND goods.inventory_quantity &lt;= 0
+        </where>
+        LIMIT #{offSet}, #{pageRow}
+    </select>
+
+    <select id="getNoInventoryQuantityCount" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            goods
+        <where>
+            <if test="nameOrCode != null and nameOrCode != ''">
+                AND
+                (
+                goods.goods_name LIKE CONCAT('%', #{nameOrCode} ,'%') OR
+                goods.goods_code LIKE CONCAT('%', #{nameOrCode} ,'%')
+                )
+            </if>
+            AND goods.inventory_quantity &lt;= 0
+        </where>
+    </select>
+
+    <select id="getHasInventoryQuantity" resultMap="BaseResultMap">
+        SELECT
+            goods.goods_id,
+            goods.goods_name,
+            goods.goods_code,
+            goods.goods_type_id,
+            goods_type.p_id,
+            goods.inventory_quantity,
+            goods.last_purchasing_price,
+            goods.min_num,
+            goods.goods_model,
+            goods.goods_producer,
+            goods.purchasing_price,
+            goods.remarks,
+            goods.selling_price,
+            goods.state,
+            goods.goods_unit,
+            goods_type.goods_type_name
+        FROM
+            goods
+        LEFT JOIN goods_type ON goods.goods_type_id = goods_type.goods_type_id
+        <where>
+            <if test="nameOrCode != null and nameOrCode != ''">
+                AND
+                (
+                goods.goods_name LIKE CONCAT('%', #{nameOrCode} ,'%') OR
+                goods.goods_code LIKE CONCAT('%', #{nameOrCode} ,'%')
+                )
+            </if>
+            AND goods.inventory_quantity &gt; 0
+        </where>
+        LIMIT #{offSet}, #{pageRow}
+    </select>
+
+    <select id="getHasInventoryQuantityCount" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+        goods
+        <where>
+            <if test="nameOrCode != null and nameOrCode != ''">
+                AND
+                (
+                goods.goods_name LIKE CONCAT('%', #{nameOrCode} ,'%')  OR
+                goods.goods_code LIKE CONCAT('%', #{nameOrCode} ,'%')
+                )
+            </if>
+            AND goods.inventory_quantity &gt; 0
+        </where>
+    </select>
+
+    <select id="getGoodsInventoryList" resultMap="BaseResultMap">
+        SELECT
+            goods.goods_id,
+            goods.goods_name,
+            goods.goods_code,
+            goods.goods_type_id,
+            goods_type.p_id,
+            goods.inventory_quantity,
+            goods.last_purchasing_price,
+            goods.min_num,
+            goods.goods_model,
+            goods.goods_producer,
+            goods.purchasing_price,
+            goods.remarks,
+            goods.selling_price,
+            goods.state,
+            goods.goods_unit,
+            goods_type.goods_type_name
+        FROM
+            goods
+        LEFT JOIN goods_type ON goods.goods_type_id = goods_type.goods_type_id
+        <where>
+            <if test="codeOrName != null and codeOrName != ''">
+                AND
+                (
+                goods.goods_name LIKE CONCAT('%', #{codeOrName} ,'%')  OR
+                goods.goods_code LIKE CONCAT('%', #{codeOrName} ,'%')
+                )
+            </if>
+            <if test="goodsTypeId != null and goodsTypeId != 1">
+                AND
+                (
+                goods.goods_type_id = #{goodsTypeId} OR
+                goods_type.p_id = #{goodsTypeId}
+                )
+            </if>
+        </where>
+        LIMIT #{offSet}, #{pageRow}
+    </select>
+
+    <select id="getGoodsInventoryCount" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM
+            goods
+        LEFT JOIN goods_type ON goods.goods_type_id = goods_type.goods_type_id
+        <where>
+            <if test="codeOrName != null and codeOrName != ''">
+                AND
+                (
+                goods.goods_name LIKE CONCAT('%', #{codeOrName} ,'%')  OR
+                goods.goods_code LIKE CONCAT('%', #{codeOrName} ,'%')
+                )
+            </if>
+            <if test="goodsTypeId != null and goodsTypeId != 1">
+                AND
+                (
+                goods.goods_type_id = #{goodsTypeId} OR
+                goods_type.p_id = #{goodsTypeId}
+                )
+            </if>
+        </where>
+    </select>
+
+    <select id="getGoodsAlarm" resultMap="BaseResultMap">
+        SELECT
+            goods.goods_id,
+            goods.goods_code,
+            goods.goods_name,
+            goods.inventory_quantity,
+            goods.min_num,
+            goods.goods_model,
+            goods.goods_producer,
+            goods.purchasing_price,
+            goods.last_purchasing_price,
+            goods.remarks,
+            goods.selling_price,
+            goods.state,
+            goods.goods_unit,
+            goods.goods_type_id,
+            goods_type.goods_type_name
+        FROM
+            goods
+        LEFT JOIN goods_type ON goods.goods_type_id = goods_type.goods_type_id
+        WHERE
+        goods.inventory_quantity &lt; goods.min_num
+    </select>
+
+</mapper>

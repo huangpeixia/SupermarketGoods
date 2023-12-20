@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.supermarketgoods.dao.MenuDao">
+
+    <resultMap id="BaseResultMap" type="com.supermarketgoods.entity.Menu">
+        <result column="menu_id" property="menuId" jdbcType="INTEGER" />
+        <result column="menu_icon" property="menuIcon" jdbcType="VARCHAR" />
+        <result column="menu_name" property="menuName" jdbcType="VARCHAR" />
+        <result column="p_id" property="pId" jdbcType="INTEGER" />
+        <result column="menu_state" property="menuState" jdbcType="VARCHAR" />
+        <result column="menu_url" property="menuUrl" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <select id="getMenuByRoleId" resultMap="BaseResultMap">
+        SELECT
+            menu.menu_id,
+            menu.menu_icon,
+            menu.menu_name,
+            menu.p_id,
+            menu.menu_state,
+            menu.menu_url
+        FROM
+        menu
+        LEFT JOIN role_menu ON role_menu.menu_id = menu.menu_id
+        WHERE role_menu.role_id = #{roleId}
+    </select>
+
+
+
+    <select id="getMenuByParentId" resultMap="BaseResultMap">
+        SELECT
+            menu.menu_id,
+            menu.menu_icon,
+            menu.menu_name,
+            menu.p_id,
+            menu.menu_state,
+            menu.menu_url
+        FROM
+          role_menu
+        LEFT JOIN menu ON role_menu.menu_id = menu.menu_id
+        WHERE
+          menu.p_id = #{parentId}
+        AND role_menu.role_id = #{roleId}
+    </select>
+
+    <select id="getAllMenuByParentId" resultMap="BaseResultMap">
+        SELECT
+            menu.menu_id,
+            menu.menu_icon,
+            menu.menu_name,
+            menu.p_id,
+            menu.menu_state,
+            menu.menu_url
+        FROM
+            menu
+        WHERE
+            p_id = #{parentId}
+    </select>
+
+</mapper>

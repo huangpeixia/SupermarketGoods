@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.supermarketgoods.dao.UnitDao">
+
+    <resultMap id="BaseResultMap" type="com.supermarketgoods.entity.Unit">
+        <result column="unit_id" property="unitId" jdbcType="INTEGER" />
+        <result column="unit_name" property="unitName" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <insert id="saveUnit" useGeneratedKeys="true" keyProperty="unitId" parameterType="com.supermarketgoods.entity.Unit">
+        INSERT INTO unit
+        (unit_name)
+        VALUES (#{unitName})
+    </insert>
+
+    <delete id="delete" parameterType="java.lang.Integer">
+        DELETE FROM
+        unit
+        WHERE unit_id = #{unitId}
+    </delete>
+
+    <select id="listAll" resultMap="BaseResultMap">
+        SELECT
+            unit.unit_id,
+            unit.unit_name
+        FROM
+            unit
+    </select>
+
+    <select id="getUnitByUnitId" resultMap="BaseResultMap">
+        SELECT
+            unit.unit_id,
+            unit.unit_name
+        FROM
+            unit
+        WHERE unit_id = #{unitId}
+    </select>
+
+</mapper>
