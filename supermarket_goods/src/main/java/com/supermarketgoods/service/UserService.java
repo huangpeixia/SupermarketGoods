@@ -5,6 +5,7 @@ import com.supermarketgoods.entity.User;
 import com.supermarketgoods.entity.UserLogin;
 
 import javax.servlet.http.HttpSession;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 public interface UserService {
@@ -15,7 +16,7 @@ public interface UserService {
 
     Map<String, Object> list(Integer page,Integer rows,String userName);
 
-    ServiceVO save(User user);
+    ServiceVO save(User user) throws NoSuchAlgorithmException;
 
     ServiceVO delete(Integer userId);
 

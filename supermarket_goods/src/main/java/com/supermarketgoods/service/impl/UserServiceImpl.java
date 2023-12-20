@@ -7,6 +7,7 @@ import com.supermarketgoods.domain.ErrorCode;
 import com.supermarketgoods.domain.ServiceVO;
 import com.supermarketgoods.domain.SuccessCode;
 import com.supermarketgoods.entity.*;
+import com.supermarketgoods.passwd.GetPasswd;
 import com.supermarketgoods.service.LogService;
 import com.supermarketgoods.service.UserService;
 import org.apache.shiro.SecurityUtils;
@@ -18,9 +19,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.supermarketgoods.passwd.GetPasswd.bytesToHex;
 
 @Service
 @Transactional
@@ -115,7 +120,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ServiceVO save(User user) {
+    public ServiceVO save(User user) throws NoSuchAlgorithmException {
 
         // 用户ID为空时，说明是新增操作，需要先判断用户名是否存在
         if(user.getUserId() == null){
@@ -125,6 +130,12 @@ public class UserServiceImpl implements UserService {
             if (exUser != null) {
                 return new ServiceVO(ErrorCode.ACCOUNT_EXIST_CODE, ErrorCode.ACCOUNT_EXIST_MESS);
             }
+            String newpassed = user.getPassword();
+            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = messageDigest.digest(newpassed.getBytes());
+            newpassed = bytesToHex(hash);
+
+            user.setPassword(newpassed);
 
             userDao.addUser(user);
             logService.save(new Log(Log.INSERT_ACTION,"添加用户:"+user.getUserName()));
