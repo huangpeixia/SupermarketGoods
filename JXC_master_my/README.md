@@ -1,6 +1,6 @@
 # 超市食品管理系统
 
-进销存管理系统，采用SpringBoot+Shiro+MyBatis+EasyUI
+超市食品管理系统，采用SpringBoot+Shiro+MyBatis+EasyUI
 
 项目采用Maven构建
 
