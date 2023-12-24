@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GoodsDao {
 
-    List<Goods> getGoodsList(@Param("offset") Integer offSet,@Param("pageRow") Integer pageRow,@Param("goodsName") String goodsName,@Param("goodsTypeId") Integer goodsTypeId);
+    List<Goods> getGoodsList(@Param("offSet") Integer offSet,@Param("pageRow") Integer pageRow,@Param("goodsName") String goodsName,@Param("goodsTypeId") Integer goodsTypeId);
 
     Integer getGoodsCount(@Param("goodsName") String goodsName,@Param("goodsTypeId") Integer goodsTypeId);
 
